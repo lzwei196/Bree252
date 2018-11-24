@@ -1,1 +1,22 @@
 
+%first 10 page
+
+html = string(webread('https://www.kijiji.ca/b-appartement-condo/ville-de-montreal/c37l1700281'));
+
+pattern1 = '<div class="title">';
+pattern2 = '<div>';
+list = extractBetween(html,pattern1,pattern2);
+
+pattern3 = '<a href="';
+pattern4 = '" class="title enable-search-navigation-flag "';
+url = extractBetween(list,pattern3,pattern4);
+
+full_url = strcat('https://www.kijiji.ca',url(1));
+html2 = string(webread(full_url));
+pattern5 = '<span class="currentPrice-441857624">';
+pattern6 = '</span>';
+listprice = string(extractBetween(html2,pattern5,pattern6));
+
+pattern7 = '<span content="'
+pattern8 = '">'
+price = extractBetween(listprice,pattern7,pattern8);
