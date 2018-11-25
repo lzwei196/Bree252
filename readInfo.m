@@ -1,6 +1,6 @@
 %function that takes a vector of post html as info and return a table
 %of attribues of the all posts, containing listing title, price, 
-%number of bathroom and bedroom
+%number of bathroom and bedroom, address
 
 function attributes = readInfo(posthtml)
 
@@ -9,6 +9,7 @@ title = strings(1, length(posthtml));
 price = zeros(1,length(posthtml));
 num_bedroom = zeros(1,length(posthtml));
 num_bathroom = zeros(1,length(posthtml));
+address = strings(1,length(posthtml));
 
     %loop through all html pages
     for i = 1:length(posthtml)
@@ -62,8 +63,22 @@ num_bathroom = zeros(1,length(posthtml));
     catch
     warning("Attribute not found!");
     end
+    
+    %find address
+    pattern_address1 = 'class="address-3617944557">';
+    pattern_address2 = '</span>';
+
+    try
+    
+    current_address = extractBetween(posthtml(i),pattern_address1,pattern_address2);
+    address(i) = current_address;
+
+    catch
+    warning("Address not found!");   
     end 
-attributes  = table(transpose(title),transpose(price),transpose(num_bedroom),transpose(num_bathroom));
-attributes.Properties.VariableNames = ["title","price","num_bedroom","num_bathroom"];
+    end 
+    
+attributes  = table(transpose(title),transpose(price),transpose(num_bedroom),transpose(num_bathroom),transpose(address));
+attributes.Properties.VariableNames = ["title","price","num_bedroom","num_bathroom","address"];
 
 end 
