@@ -3,6 +3,8 @@
 
 function  posthtml = readPost(html)
 
+%initialize matrix to store listing urls
+%the default seeting of each page contains 20 listing 
 url_matrix = strings(20,length(html));
     %loopping through the html pages 
     for i = 1:length(html)
@@ -22,9 +24,10 @@ url_matrix = strings(20,length(html));
        end 
     end 
 
-%reshape it to vector 
+%reshape matrix to vector 
 posturl = reshape(url_matrix,[],1);
 
+%read the url to html
 posthtml = strings(1,length(posturl));
     for i = 1:length(posturl)
         current_url = posturl(i);
