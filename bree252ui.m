@@ -169,4 +169,4 @@ for n =1:size(sortedtable,1)
    end
 end
 writetable(sortedtable,'Housinginfo.csv');
-msgbox('The file has been succesfully refined and saved to same file pass','Complete');
+msgbox('The file has been succesfully refined and saved to same file path','Complete');
