@@ -1,21 +1,21 @@
 %Function that takes a vector of html pages string as input and return a vertor of
 % listing html pages that contain the info of each pages 
-
+%posthtml = readPost(html)
 function  posthtml = readPost(html)
 
 %initialize matrix to store listing urls
-%the default seeting of each page contains 20 listing 
+%the default setting of each page contains 20 listing 
 url_matrix = strings(20,length(html));
     %loopping through the html pages 
     for i = 1:length(html)
-       %patterns of the html tages that store the posting url
+       %patterns of the html tages that store the listing url
        pattern1 = '<div class="title">';
        pattern2 = '<div>';
        current_list = extractBetween(html(i),pattern1,pattern2);
        pattern3 = '<a href="';
        pattern4 = '" class="title enable-search-navigation-flag "';
        
-       %posting url list
+       %listing url list
        current_url_list = extractBetween(current_list,pattern3,pattern4);
        for j = 1:20
            current_url = current_url_list(j);

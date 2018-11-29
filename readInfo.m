@@ -1,6 +1,7 @@
 %function that takes a vector of post html as info and return a table
 %of attribues of the all posts, containing listing title, price, 
 %number of bathroom and bedroom, address
+%attributes = readInfo(posthtml)
 
 function attributes = readInfo(posthtml)
 

@@ -1,6 +1,8 @@
 %Function that take district and number of page as input and return a vertor of
 %all kijiji pages with appartment posting
+
 %https://www.kijiji.ca/b-appartement-condo/ville-de-montreal/c37l1700281
+%readHTML(ville-de-montreal, 1)
 
 function html = readHTML(district, numPage)
 
@@ -21,6 +23,7 @@ page = strings(1,numPage);
         end
     end
 disp(page);
+
 %concatenate sting to find all urls and read to html
 html = strings(1,numPage);
     for i = 1:numPage
