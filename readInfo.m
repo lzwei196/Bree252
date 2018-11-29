@@ -4,7 +4,7 @@
 
 function attributes = readInfo(posthtml)
 
-%initialize the vectors to store info
+%initialize the attribute vectors to store listing info
 title = strings(1, length(posthtml));
 price = zeros(1,length(posthtml));
 num_bedroom = zeros(1,length(posthtml));

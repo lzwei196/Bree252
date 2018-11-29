@@ -1,5 +1,7 @@
 %Function that take district and number of page as input and return a vertor of
 %all kijiji pages with appartment posting
+%https://www.kijiji.ca/b-appartement-condo/ville-de-montreal/c37l1700281
+
 function html = readHTML(district, numPage)
 
 %base url

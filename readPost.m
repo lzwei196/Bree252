@@ -1,5 +1,5 @@
 %Function that takes a vector of html pages string as input and return a vertor of
-% posting html pages that contain the info of each pages 
+% listing html pages that contain the info of each pages 
 
 function  posthtml = readPost(html)
 
