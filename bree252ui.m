@@ -22,7 +22,7 @@ function varargout = bree252ui(varargin)
 
 % Edit the above text to modify the response to help bree252ui
 
-% Last Modified by GUIDE v2.5 25-Nov-2018 17:54:59
+% Last Modified by GUIDE v2.5 29-Nov-2018 10:20:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,6 +51,7 @@ function bree252ui_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to bree252ui (see VARARGIN)
+
 
 % Choose default command line output for bree252ui
 handles.output = hObject;
@@ -90,6 +91,7 @@ function location_Callback(hObject, eventdata, handles)
 locationcontents = cellstr(get(hObject,'String'));
 locationchoice = locationcontents(get(hObject,'Value'));
 
+%%store the users choice and store them to the variable locationvalue
 if (strcmp(locationchoice,'Laval'))
     locationvalue = 'laval-rive-nord';
 elseif(strcmp(locationchoice,'Montreal'))
@@ -99,8 +101,11 @@ elseif(strcmp(locationchoice,'South Shore'))
 elseif(strcmp(locationchoice,'West Island'))
     locationvalue = 'ouest-de-lile-qc';
 end
- assignin('base','district',locationvalue);
+
+%%give the data to the appdata thus can be used in other functions.
  setappdata(0,'district',locationvalue);
+ 
+ 
 % --- Executes during object creation, after setting all properties.
 function pages_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to pages (see GCBO)
@@ -115,9 +120,12 @@ end
 
 % --- Executes on selection change in pages.
 function pages_Callback(hObject, eventdata, handles)
+
+%store the choice of page numbers, store it as a cellstr
 pagecontents = cellstr(get(hObject,'String'));
 pagechoice = (pagecontents(get(hObject,'Value')));
-assignin('base','numpage',pagechoice);
+
+%set the data to appdata so other functions can access.
 setappdata(0,'numpage1',pagechoice);
 
 % --- Executes on button press in FIND.
@@ -125,15 +133,30 @@ function FIND_Callback(hObject, eventdata, handles)
 % hObject    handle to FIND (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-msgbox('The scraping process starts now, and it may take several minutes depends on the data size, please wait patiently','Attention');
+
+%msg box to tell the user that the scraping process starts. The scraping
+%process takes time, therefore we leave the msgbox untill the scraping
+%process is done
+msgbox('The scraping processs starts now, please wait patiently. The openning of this window indicates the scraping process is still running.','Attention')
+
+%get the user input from previous two pop button and set them to new
+%variables so we can use the data in this function.
 numpage1=getappdata(0,'numpage1');
 numPage = str2num(numpage1{1});
 district = getappdata(0,'district');
 html = readHTML(district, numPage);
+
+%After we have the input, we now can begin the scraping process
 posthtml = readPost(html);
 attributes = readInfo(posthtml);
+
+%the attribute is the table we want, set it to appdata so other function
+%can use it
 setappdata(0,'attributes',attributes);
-h = msgbox('The Housing information is ready. Please choose the refine option to generate the table.','Success')
+
+%msg the user that the scraping process has finished, the user can now
+%begin the next step.
+msgbox('The Housing information is ready. Please choose the refine option to generate the table.','Success')
 
 
 % --- Executes on button press in pushbutton3.
@@ -142,10 +165,13 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%request the user input from the two radio buttons, price and bedrooms
 price = get(handles.Price, 'SelectedObject');
 Price = get(price,'String');
 numberofbeds = get(handles.Bedrooms, 'SelectedObject');
 Numberofbeds = str2num(get(numberofbeds,'String'));
+
+%get the output table from the appdata  and assign it to a new variable
 finaltable = getappdata(0,'attributes');
 
 %%sort the table under different price options
@@ -154,19 +180,70 @@ if strcmp(Price,'Low to High')
 else
     sortedtable = sortrows(finaltable,2,'descend');
 end
-sortedtable;
+
+
 %%get rid of the rows that dont have the certain number of bedrooms
+%transer the bedroom number column in the table to array for easier
+%manipulation
 a = table2array(sortedtable(:,'num_bedroom'));
+
+%create two index one for array, one for table.
 c = 0;
 d= 0;
-   
-for n =1:size(sortedtable,1)
-   c=c+1;
-   d=d+1;
-   if a(d,1) ~= 1
+
+%create a switch section to follow user's choice, remove the rows thats not
+%the desired bedroom number
+switch Numberofbeds
+    %case 1 if the desired bedroom is 1
+    case 1
+    for n =1:size(sortedtable,1)
+      c=c+1;
+      d=d+1;
+    if a(d,1) ~= 1
        sortedtable([c],:)=[];
        c=c-1;
-   end
+    end
+    end
+    
+    %case 2 if the desired bedroom is 2
+    case 2
+    for n =1:size(sortedtable,1)
+      c=c+1;
+      d=d+1;
+    if a(d,1) ~= 2
+       sortedtable([c],:)=[];
+       c=c-1;
+    end
+    end
+    
+    %case 3 if the desired bedroom is 3
+    case 3
+    for n =1:size(sortedtable,1)
+      c=c+1;
+      d=d+1;
+    if a(d,1) ~= 3
+       sortedtable([c],:)=[];
+       c=c-1;
+    end
+    end
 end
-writetable(sortedtable,'Housinginfo.csv');
-msgbox('The file has been succesfully refined and saved to same file path','Complete');
+setappdata(0,'sortedtable',sortedtable);
+
+%write the table to csv file
+writetable(sortedtable,'Housinginfo_refined.csv');
+msgbox('The file has been succesfully refined and saved to same file pass','Complete');
+
+%%open the table
+open('Housinginfo_refined.csv');
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+tablenorefine = getappdata(0,'attributes');
+writetable(tablenorefine,'Housinginfo.csv');
+open('Housinginfo.csv');
+
+
